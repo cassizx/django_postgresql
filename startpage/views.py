@@ -1,6 +1,6 @@
 from django.shortcuts import render
 #from django.http import HttpResponse
-from services.services import connection
+from services.services import connection, disconnect_from_db
 from prettytable import from_db_cursor
 from django.conf import settings
 from django.conf.urls.static import static
@@ -36,8 +36,6 @@ def login(request):
     ip_adress = request.POST['ip_adress']
     port = request.POST['port']
     
-
-
     context = {
         'dbname': dbname,
         'user_name': user_name,
@@ -53,3 +51,24 @@ def login(request):
         'table': test
     }
     return render(request, 'resp.html', context1)
+
+def logout(request):
+    # dbname = request.POST['dbname']
+    # user_name = request.POST['user_name']
+    # psw = request.POST['psw']
+    # ip_adress = request.POST['ip_adress']
+    # port = request.POST['port']
+    
+    # context = {
+    #     'dbname': dbname,
+    #     'user_name': user_name,
+    #     'psw': psw,
+    #     'ip_adress': ip_adress,
+    #     'port': port
+    # }
+    
+    resp = disconnect_from_db()
+    context = {
+        'resp': resp
+    }
+    return render(request, 'index.html', context) 

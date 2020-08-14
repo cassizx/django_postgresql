@@ -5,12 +5,13 @@ from prettytable import PrettyTable
 from prettytable import from_db_cursor
 #from startpage.views import connection
 
+
 def connection(data):
-    try:
-        #file_with_data = open('data.txt', 'rt')                                       #Открытие файла с реквизитами для подключения.
-        read_connection_data = data
+
+    read_connection_data = data
+
+    try:       
         
-        #read_connection_data = read_connection_data.split('\n')
         con = psycopg2.connect(                                                           #Для выполнения запроса к базе, необходимо с ней соединиться и получить курсор.
             database = read_connection_data['dbname'], user = read_connection_data['user_name'], password = read_connection_data['psw'], 
             host = read_connection_data['ip_adress'], port = read_connection_data['port']
@@ -34,3 +35,9 @@ def connection(data):
         return f'Ошибка/n{err}'
         
     return f'{resp}'
+
+def disconnect_from_db():
+
+    #cur.commit()
+    #cur.close()
+    return f'Disconnected.'
