@@ -210,6 +210,9 @@
     .orange-btn{
       background: rgba(87,198,255,.5);
     }
+    .error{
+      display: none;
+    }
   </style>
 
   
@@ -220,6 +223,13 @@
   <img src="https://dqcgrsy5v35b9.cloudfront.net/cruiseplanner/assets/img/icons/login-w-icon.png">
   </img>
 </div>
+
+{% if resp %}
+<div class="error">
+  {{ resp }}
+</div>
+{% endif  %}
+
 <div id="container">
   <h1>Connect to DB</h1>
   <span class="close-btn">
@@ -264,6 +274,27 @@
           $("#login-button").fadeIn(800);
         });
       });
+
+      let mess = document.querySelector(".error");
+
+      function messageShow(){
+            document.write('Ошибка!!!!');
+            setTimeout( window.location.href = '/', 15000);
+            showMessage(mess.innerText);
+      };
+
+      if (mess){
+          // let error_message = 'Error';
+          // //alert(mess.text);
+          // console.log(mess);
+          // showMessage(mess.innerText);
+          // setTimeout( window.location.href = '/', 10000);
+          messageShow()
+      
+      }
+
+
+      
     </script>
 
 </body>

@@ -26,6 +26,7 @@ def index(request):
 #     #log(resp, qeury)
 #     #return start()
 #     return resp
+
 # pass
 
 def login(request):
@@ -44,31 +45,21 @@ def login(request):
         'port': port
     }
     
-    test = connection(context)
-    #test1 = exist_now_table()
-
-    context1 = {
-        'table': test
-    }
-    return render(request, 'resp.html', context1)
+    conn = connection(context)
+    if conn == 'Ошибка':
+        return render(request, 'index.html', context={
+           'resp' : conn 
+        })
+    else:
+        context = {
+            'table': conn
+        }
+        return render(request, 'resp.html', context)
 
 def logout(request):
-    # dbname = request.POST['dbname']
-    # user_name = request.POST['user_name']
-    # psw = request.POST['psw']
-    # ip_adress = request.POST['ip_adress']
-    # port = request.POST['port']
-    
-    # context = {
-    #     'dbname': dbname,
-    #     'user_name': user_name,
-    #     'psw': psw,
-    #     'ip_adress': ip_adress,
-    #     'port': port
-    # }
-    
-    resp = disconnect_from_db()
+
+    resp = disconnect_from_db(request)
     context = {
         'resp': resp
     }
-    return render(request, 'index.html', context) 
+    return render(request, 'logout.html', context) 

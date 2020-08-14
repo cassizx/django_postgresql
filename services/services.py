@@ -24,20 +24,21 @@ def connection(data):
         #print(exist_now_table())                                                # Покажет сущуствующие таблицы и вызовит функцию start, при большом количестве таблиц
         #start() # Вызывается из exist_now_table()                              # закомментировать и расскомментировать start()
         #pass
-        qeury=("SELECT table_name FROM information_schema.tables  WHERE table_schema='public' ORDER BY table_name")
-        cur.execute(qeury)
+        #qeury=("SELECT table_name FROM information_schema.tables  WHERE table_schema='public' ORDER BY table_name")
+        #cur.execute(qeury)
          #print("Exist now table:")
-        resp = from_db_cursor(cur)
+        #resp = from_db_cursor(cur)
+        resp = cur
     except psycopg2.OperationalError as err:
         #log(err, read_connection_data)
         #print('Connection eror, check data to connect.')
         #print(read_connection_data)
-        return f'Ошибка/n{err}'
+        return f'Ошибка'
         
     return f'{resp}'
 
-def disconnect_from_db():
+def disconnect_from_db(request):
 
     #cur.commit()
     #cur.close()
-    return f'Disconnected.'
+    return f'Disconnected.{request}'

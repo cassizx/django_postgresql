@@ -45,15 +45,23 @@
     {{table}}
     </pre>
     <script>
-        $("#submit_btn").click(function(evnt){
-            evnt.preventDefault() 
-        // TweenMax.from("#container", .4, { scale: 1, ease:Sine.easeInOut});
-        // TweenMax.to("#container", .4, { left:"0px", scale: 0, ease:Sine.easeInOut});
-        alert('stoy');
-        $("#container, #forgotten-container").fadeOut(800, function(){
-          $("#login-button").fadeIn(800);
-        });
-      });
+        document.getElementById('submit_btn').addEventListener(
+            'click', stopDefAction, false
+        );
+        function stopDefAction(evt){
+            evt.preventDefault() 
+            console.log('click')
+            window.location.href = '/logout/';
+        }
+        // $("#submit_btn").click(function(evt){
+        //     evt.preventDefault() 
+        // // TweenMax.from("#container", .4, { scale: 1, ease:Sine.easeInOut});
+        // // TweenMax.to("#container", .4, { left:"0px", scale: 0, ease:Sine.easeInOut});
+        // alert('stoy');
+        // $("#container, #forgotten-container").fadeOut(800, function(){
+        //   $("#login-button").fadeIn(800);
+    //     });
+    //   });
     </script>
 </body>
 </html>
