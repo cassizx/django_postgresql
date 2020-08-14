@@ -1,0 +1,27 @@
+-----Start new query.-----
+Time: 2020-08-13 00:05:25.289550 
+Qeury: {'dbname': '12', 'user_name': 'cassizx', 'psw': '123456789', 'ip_adress': '12', 'port': '12'} 
+Respone:
+could not translate host name "12" to address: Unknown host
+
+-----End of qeury.----- 
+-----Start new query.-----
+Time: 2020-08-13 00:05:31.327452 
+Qeury: {'dbname': '12', 'user_name': 'cassizx', 'psw': '123456789', 'ip_adress': '13', 'port': '13'} 
+Respone:
+could not translate host name "13" to address: Unknown host
+
+-----End of qeury.----- 
+-----Start new query.-----
+Time: 2020-08-13 00:06:15.570007 
+Qeury: {'dbname': '12', 'user_name': 'cassizx', 'psw': '123456789', 'ip_adress': '13', 'port': '13'} 
+Respone:
+could not translate host name "13" to address: Unknown host
+
+-----End of qeury.----- 
+-----Start new query.-----
+Time: 2020-08-13 00:06:57.284395 
+Qeury: <connection object at 0x05101A40; dsn: 'user=postgres password=xxx dbname=postgres host=localhost port=5432', closed: 0> 
+Respone:
+Database opened successfully.
+-----End of qeury.----- 
