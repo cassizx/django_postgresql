@@ -29,39 +29,11 @@
     </style>
 </head>
 <body>
-    <form class="wripper" method='post' action="/logout/">
-        {{resp}}
-        <button class="submit_btn" id="submit_btn" type="submit">Disconnect</button> {% csrf_token %}
-    </form>
-    <h2>Connection data</h2>
-    {% if dbname %}
-    <p>'dbname':{{ dbname }}</p>
-    <p>'user_name':{{ port}}</p>
-    <p>'psw':{{ psw }} </p>
-    <p>'ip_adress':{{ ip_adress }} </p>
-    <p>'port':{{ port }}</p>
-    {% endif  %}
-    <pre>
-    {{table}}
-    </pre>
-    <script>
-        document.getElementById('submit_btn').addEventListener(
-            'click', stopDefAction, false
-        );
-        function stopDefAction(evt){
-            evt.preventDefault() 
-            console.log('click')
-            window.location.href = '/logout/';
-        }
-        // $("#submit_btn").click(function(evt){
-        //     evt.preventDefault() 
-        // // TweenMax.from("#container", .4, { scale: 1, ease:Sine.easeInOut});
-        // // TweenMax.to("#container", .4, { left:"0px", scale: 0, ease:Sine.easeInOut});
-        // alert('stoy');
-        // $("#container, #forgotten-container").fadeOut(800, function(){
-        //   $("#login-button").fadeIn(800);
-    //     });
-    //   });
-    </script>
+    <div>
+        <p>
+            <p class="is_authenticated">{{resp}}</p>
+            <meta http-equiv="refresh" content="2.5;{{resp_url}}">
+        </p>
+    </div>
 </body>
 </html>

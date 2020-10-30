@@ -197,16 +197,6 @@
       color: #fff;
     }
 
-    /* #remember{
-      position: absolute;
-      font-size: 13px;
-      font-family: 'Hind', sans-serif;
-      color: rgba(255,255,255,.5);
-      top: 7px;
-      left: 20px;
-    } */
-
-
     .orange-btn{
       background: rgba(87,198,255,.5);
     }
@@ -236,7 +226,7 @@
     <img src="https://cdn4.iconfinder.com/data/icons/miu/22/circle_close_delete_-128.png"></img>
   </span>
    
-    <form class="wripper" method='post' action="/login/">{% csrf_token %}
+    <form class="wripper" method='post' action="login/">{% csrf_token %}
       <div>
       
       <input class="wripper" type="text" placeholder="Enter DB Name" name="dbname" required >
@@ -278,8 +268,8 @@
       let mess = document.querySelector(".error");
 
       function messageShow(){
-            document.write('Ошибка!!!!');
-            setTimeout( window.location.href = '/', 15000);
+            document.write('Ошибка!');
+            setTimeout( window.location.href = '/', 10000);
             showMessage(mess.innerText);
       };
 
