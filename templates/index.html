@@ -226,10 +226,10 @@
     <img src="https://cdn4.iconfinder.com/data/icons/miu/22/circle_close_delete_-128.png"></img>
   </span>
    
-    <form class="wripper" method='post' action="login/">{% csrf_token %}
+    <form class="wripper" method='post' action="main/">{% csrf_token %}
       <div>
       
-      <input class="wripper" type="text" placeholder="Enter DB Name" name="dbname" required >
+      <input class="wripper" type="text" placeholder="Enter DB Name" name="dbname" id='dbname' required >
       
       <input class="wripper" type="text" placeholder="Enter Username" name="user_name" required>
       
@@ -249,7 +249,7 @@
 <script src='http://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js'></script>
 
     <script>
-      $('#login-button').click(function(){
+    $('#login-button').click(function(){
         $('#login-button').fadeOut("slow",function(){
           $("#container").fadeIn();
           TweenMax.from("#container", .4, { scale: 0, ease:Sine.easeInOut});

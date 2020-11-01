@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import Request_from_main_page, index, login,f, logout
+from .views import Request_from_main_page, index, login, select_from_table, logout, create_table, drop_table, custom_query
 from django.conf import settings
 from django.conf.urls.static import static
 
@@ -8,9 +8,12 @@ urlpatterns = [
     #path('', index),
     path('', index),
     path('login/', login),
-    #path('login/', Request_from_main_page.login),
+    path('main/', login),
     #path('logout/', Request_from_main_page.logout),
     path('logout/',logout),
     #path('f/', Request_from_main_page.f), 
-    path('f/', f),    
-] #+ static(settings.STATIC_URL, document_root=settings.STATIC_URL)
+    path('select_from_table/', select_from_table), 
+    path('create_table/', create_table),     
+    path('drop_table/', drop_table), 
+    path('custom_query/', custom_query),
+]
