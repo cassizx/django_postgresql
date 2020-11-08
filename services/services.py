@@ -3,10 +3,13 @@ import os
 import psycopg2
 from prettytable import PrettyTable 
 from prettytable import from_db_cursor
+from datetime import datetime 
+from time import sleep
 #from startpage.views import connection
 
 
 class Work_with_db():
+
 
     def __init__(self, data):
         self.dbname = data['dbname']
@@ -14,7 +17,6 @@ class Work_with_db():
         self.psw = data['psw']
         self.ip_adress = data['ip_adress']
         self.port = data['port']
-            # self.connect_to_db()
     
 
     def connect_to_db(self):
@@ -24,59 +26,53 @@ class Work_with_db():
                 host = self.ip_adress, port = self.port
                 )        
             self.cur = self.con.cursor()                                                      #Через курсор происходит дальнейшее общение в базой.
-            #resp = ("Database opened successfully.")
-            #file_with_data.close()
-            #print(resp)
-            #log(resp, con)
-            #print(exist_now_table())                                                # Покажет сущуствующие таблицы и вызовит функцию start, при большом количестве таблиц
-            #start() # Вызывается из exist_now_table()                              # закомментировать и расскомментировать start()
-            #pass
-            self.qeury = ("SELECT table_name FROM information_schema.tables  WHERE table_schema='public' ORDER BY table_name")
-            self.cur.execute(self.qeury)
-            #print("Exist now table:")
-            #resp = from_db_cursor(cur)
-            self.resp = from_db_cursor(self.cur)
+            self.resp = self.exist_now_table()
+            self.log(f"Succes\n{self.resp}", self.con)
         except psycopg2.OperationalError as err:
-            #log(err, read_connection_data)
-            #print('Connection eror, check data to connect.')
-            #print(read_connection_data)
+            self.log(err, 'Login error')
             return f'Ошибка'
-            
-        return f'{ self.resp }'
+        else:   
+            return str(self.resp)
+    
+
+    def calculation_execution_time(self, time_start, time_end):
+        self.execution_time = time_end - time_start
+        return f"Запрос выполнен за {self.execution_time}"
 
 
     def select_table(self, table):
         self.con.commit()
         self.query_table = table
         self.query = (f'select * from {self.query_table}')
-        #time_start_qeury = datetime.now()                                                                           # Время перед началом выполнения запроса
+        self.time_start_qeury = datetime.now()                                                                           # Время перед началом выполнения запроса
         try:
             self.cur.execute(self.query)
             self.reqested_table = from_db_cursor(self.cur) 
-            #time_end_qeury = datetime.now()                                                                             # Время получения ответа                                                   
+            self.time_end_qeury = datetime.now()                                                                             # Время получения ответа                                                   
         except psycopg2.errors.UndefinedTable as err:
+            self.time_end_qeury = datetime.now()
             self.con.commit()
-            print('Wrong table name, try again')
-            #log(err , query)
-            #exist_now_table()
-            self.reqested_table = f'Ошибка {err}'
-            return self.reqested_table
+            self.execution_time_resp = self.calculation_execution_time(self.time_start_qeury, self.time_end_qeury)            # Вычесление времени выполнения запроса
+            self.select_table_response = {
+                'reqested_table': 'Wrong table name, try again',
+                'execution_time': self.execution_time_resp 
+            }
+            self.log(err , self.query)
+            return self.select_table_response
         except psycopg2.errors.SyntaxError as err:
             self.con.commit()
-            print('Wrong table name, try again')
-            #log(err , query)
-            #exist_now_table()
             self.reqested_table = f'Ошибка {err}'
+            self.log(err , self.query)
             return self.reqested_table
         else:
-            #calculation_execution_time(time_start_qeury, time_end_qeury)            # Вычесление времени выполнения запроса
-            #log(reqested_table, query)
-            #print(reqested_table)    
+            self.execution_time_resp = self.calculation_execution_time(self.time_start_qeury, self.time_end_qeury)            # Вычесление времени выполнения запроса
             self.con.commit()
-            #start()
-            return self.reqested_table
-
-        #self.reqested_table
+            self.select_table_response = {
+                'reqested_table':self.reqested_table,
+                'execution_time': self.execution_time_resp 
+            }
+            self.log(self.reqested_table, self.query) 
+            return self.select_table_response
 
 
     def new_table(self, new_table_name):
@@ -88,31 +84,22 @@ class Work_with_db():
             # time_end_qeury = datetime.now()
         except psycopg2.errors.DuplicateTable as err:
             self.con.commit()
-            # self.cur.execute("SELECT table_name FROM information_schema.tables  WHERE table_schema='public' ORDER BY table_name")
-            # self.exist_tables = from_db_cursor(self.cur) 
-            self.exist_tables = self.exist_now_table()
-            # log(err, query)
+            self.exist_tables = self.exist_now_table()    
             self.resp = {
                 'status': f"Table {new_table_name} is already exist.",
                 'exist_tables': str(self.exist_tables)
             }
+            self.log(self.resp, self.query)
             return self.resp
-            # start()
         else:
-            # self.cur.execute("SELECT table_name FROM information_schema.tables  WHERE table_schema='public' ORDER BY table_name")
             self.exist_tables = self.exist_now_table()
-            print(self.exist_tables)
             self.resp = {
                 'status': f'Table {new_table_name} created.',
                 'exist_tables': str(self.exist_tables)
             }
             # calculation_execution_time(time_start_qeury, time_end_qeury)
-            # log(to_log_resp, query)                                                                                    
-            # print(to_log_resp)
-            # start()
+            self.log(self.resp, self.query)                                                                                    
             return self.resp
-        pass    
-    pass 
 
 
     def exist_now_table(self):
@@ -127,36 +114,28 @@ class Work_with_db():
             # time_start_qeury = datetime.now()
             self.cur.execute(self.query)
             self.con.commit()     
-            # resp = (f"Done.")
             # time_end_qeury = datetime.now()    
-        except psycopg2.errors.UndefinedTable as err:
-            # log(err, query)         
-            print('Wrong table name, try again.')
+        except psycopg2.errors.UndefinedTable as err:       
             self.con.commit()
-            # return exist_now_table()
             self.resp = {
-                'status': 'Wrong table name, try again.', 
-                'exist_tables': str(self.exist_tables)
+                'status': f'Wrong table name, table {drop_table} not exist, try again.', 
+                'exist_tables': str(self.exist_now_table())
             }
+            self.log(self.resp, self.query)
             return self.resp
         else:
             # calculation_execution_time(time_start_qeury, time_end_qeury)
-            # print(resp)
-            # log(resp, query)
-            self.exist_now_table() 
-
-            # self.cur.execute("SELECT table_name FROM information_schema.tables  WHERE table_schema='public' ORDER BY table_name")
-            # self.exist_tables = from_db_cursor(self.cur) 
             self.resp = {
                 'status': f'Table {drop_table} was dropped.', 
-                'exist_tables': str(self.exist_tables)
+                'exist_tables': str(self.exist_now_table())
             }
+            self.log(self.resp, self.query)
             return self.resp
 
 
     def his(self, reqest):
         self.status = 'Done.'
-        self.query = (f'{reqest}')
+        self.query = (f'{reqest.strip()}')
         try:
             # time_start_qeury = datetime.now()
             self.cur.execute(self.query)
@@ -164,60 +143,45 @@ class Work_with_db():
             # time_end_qeury = datetime.now()
         except psycopg2.InterfaceError as err:
             self.con.commit()
-            print(f'Exception {err}')
-            # log(err, query)
             self.status = f'Exception {err}'
+            self.log(err, self.query)
             return self.status    
-            # start()
         except psycopg2.ProgrammingError as err: 
-            print(f'Exception {err} , try again.')
             if err == 'psycopg2.ProgrammingError: no results to fetch':
-                print('Done.')
+                self.log(self.status, self.query)
                 return self.status
-            # log(err, query)
-            self.con.commit()
-            # start()
+            else:
+                self.con.commit()
+                self.log(err, self.query)
+                return err
         else:
             self.con.commit()
             if self.resp == None:
-                print ('Done.')
-               
+                self.log(self.status, self.query)
                 return self.status
             else:
+                self.log(self.resp, self.query)
                 return self.resp 
                 # calculation_execution_time(time_start_qeury, time_end_qeury)
-            # else:
-            #     try:
-            #         # calculation_execution_time(time_start_qeury, time_end_qeury)
-            #         # print(resp)
-            #     except:
-            #         pass
-            # log(resp, query)
-  
+    
 
     def disconnect_from_db(self):
-        #self.cur.commit()
-        self.cur.close()
-        return f'Disconnected.'
+        try:
+            # self.cur.commit()
+            self.cur.close()
+            self.log('Disconnected','Disconnect')
+        except Exception as err:
+            return f'Error {err}'
+        else:
+            return f'Disconnected.'
 
 
-# class Work_with_db():
+    def log(self, resp, reqest='what_do'):
+        date = datetime.date(datetime.now())
+        file_with_log = (f"log{date}.log")                                                       # Создание названия файла   
+        with open(file_with_log, 'a') as write_to_file:                                             # Открытие файла лога в режиме a - добавления записи в конец
+            write_to_file.write("-----Start new query.-----\n")
+            write_to_file.write(f"Time: {datetime.now()} \nQeury: {reqest} \nRespone:\n")
+            write_to_file.write(str(resp))
+            write_to_file.write("\n-----End of qeury.----- \n")
 
-#     def __init__(self, data):
-#         self.dbname = data.POST['dbname']
-#         self.user_name = data.POST['user_name']
-#         self.psw = data.POST['psw']
-#         self.ip_adress = data.POST['ip_adress']
-#         self.port = data.POST['port']
-    
-#     def login(self):
-#         data_to_conn = {
-#         'dbname': self.dbname,
-#         'user_name': self.user_name,
-#         'psw': self.psw,
-#         'ip_adress': self.ip_adress,
-#         'port': self.port
-#         }   
-    
-#         conn = Connection(data_to_conn)
-#         return conn

@@ -7,7 +7,7 @@
     {% load static %}
     <!-- Bootstrap core CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
-    <link rel="stylesheet" href="{% static 'css/mainpage.css' %}">
+    <link rel="stylesheet" href="{% static 'css/mainpage.css' %}" type="text/css">
   </head>
   <body>
     <div class="d-flex flex-column flex-md-row align-items-center p-3 px-md-4 mb-3 bg-white border-bottom shadow-sm" style="background-color: bisque;">
@@ -30,13 +30,12 @@
        </div>
         {% endif  %}
         {% comment %} div с полями для ввода команды к бд {% endcomment %}
-        <div class="card mb-4 shadow-sm data_inputs" style="padding-top: 15px;">  
-
+        <div class="card mb-4 shadow-sm data_inputs">  
             <div class="card mb-4" style="height:40px; margin-bottom: 0px;">
                 <div class="card-body form-inline" style="height: 40px; padding: 10px 10px;">  
                     <h6 class="card-title margin_card_elem">Select from table</h6>
                         {% csrf_token %}
-                        <input type="text" class="col-md-6 form-control margin_card_elem" name="table_name" id="table_name" >
+                        <input type="text" class="col-md-6 form-control margin_card_elem" name="table_name" id="table_name">
                         <button class="btn btn-success margin_card_elem" id="info_btn">Select</button>
                 </div>
             </div>
@@ -108,8 +107,6 @@
     <!-- Modal end -->
     </div>
 </div>
-</div>
-
 </div>
 
     <script src="https://code.jquery.com/jquery-3.5.1.js" integrity="sha256-QWo7LDvxbWT2tbbQ97B53yJnYU3WhH/C8ycbRAkjPDc=" crossorigin="anonymous"></script>

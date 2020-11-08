@@ -11,10 +11,6 @@ import json
 from django.shortcuts import redirect
 
 
-
-#from mainpage.views import show_main_page 
-
-
 def index(request):
     #return HttpResponse("Hello, world. You're at the polls index.")
     #Request_from_main_page(request)
@@ -29,38 +25,62 @@ def login(request):
         return log.login(request)
     else:
         context = {
-            'response': 'Dont loginned.'
+            'response': 'Not loginned.'
         }
         return render(request, 'eror.html', context)
 
 
 def select_from_table(request):
-    if request.is_ajax():    
-        print(log)
+    if request.is_ajax() and log.loggined:    
+        print(log, log.loggined)
         return log.select_from_table(request)
     else:
-           return JsonResponse({'Erorr':'Erorr'}, status=400) 
+        return JsonResponse({'Error':'Error, not loggined'}, status=401) 
     
 
-def logout(request):  
-    # cache.clear() 
-    return log.logout(request)
+def logout(request): 
+    try:
+        if log.loggined: 
+            log.logout(request)
+        else:
+            print('else в logout функции', log.loggined)
+            context = {
+                        'response': 'Not loggined'
+                    }
+            return render(request, 'eror.html', context) 
+    except NameError as identifier:
+            print(identifier)
+            context = {'response': 'Not loggined.'}
+            return render(request,'eror.html', context)
+    else:
+        print('До False',log.loggined)
+        # log.loggined = False
+        print('После', log.loggined) 
+        return render(request, 'logout.html', context = {
+                    'response': 'Disconnected'
+            })
+    # else: 
+    #     print('else в logout функции',self.loggined)
+    #     context = {
+    #                     'response': 'Not loggined'
+    #                 }
+    #     return render(request, 'eror.html', context) 
     
 
 def create_table(request):
-    if request.is_ajax():  
+    if request.is_ajax() and log.loggined:  
         return log.create_table(request)
     else:
-        return JsonResponse({'Erorr':'Erorr'}, status=400) 
+        return JsonResponse({'Error':'Error'}, status=401) 
 
 def drop_table(request):
-    if request.is_ajax():  
+    if request.is_ajax() and log.loggined:  
         return log.drop_table(request)
     else:
         return JsonResponse({'Erorr':'Erorr'}, status=400) 
 
 def custom_query(request):
-    if request.is_ajax():  
+    if request.is_ajax() and log.loggined:  
         return log.custom_query(request)
     else:
         return JsonResponse({'Erorr':'Erorr'}, status=400) 
@@ -76,7 +96,7 @@ class Request_from_main_page():
         self.ip_adress = request.POST['ip_adress'] #'localhost' #data['ip_adress']
         self.port = request.POST['port'] #'5432' #data['port']
         #self.request = request
-               
+        # self.loggined = False
         self.data = {
             'dbname': self.dbname,
             'user_name': self.user_name,
@@ -88,20 +108,14 @@ class Request_from_main_page():
 
     def login(self, request):   
         self.conn = Work_with_db(self.data)
-        self.resp = self.conn.connect_to_db()
-        
+        self.resp = self.conn.connect_to_db()   
         if self.resp == 'Ошибка':
-
-            self.resp_url = "http://127.0.0.1:8000/"
-            self.conn_resp = self.resp
-
             self.context={
-            'resp' : self.conn_resp,
-            'resp_url': self.resp_url,
+            'response' : "Ошибка авторизации, проверьте данные.",
             }
-
-            return render(request, 'resp.html', self.context)
+            return render(request, 'eror.html', self.context)
         else:
+            self.loggined = True
             self.context = {
                 'table': self.resp,
                 'dbname': self.dbname
@@ -111,30 +125,41 @@ class Request_from_main_page():
 
 
     def logout(self, request):
-        try:
-            self.resp = self.conn.disconnect_from_db()
-        except Exception as err:
-            context = {
-                    'response': 'Except {err}'
-                }
-            return render(request, 'eror.html', context) 
-        else:
-            context = {
-                    'resp': self.resp
-                }
-            return render(request, 'logout.html', context) 
+        if self.loggined:
+            try:
+                self.resp = self.conn.disconnect_from_db()
+            except Exception as err:
+                context = {
+                        'response': 'Except {err}'
+                    }
+                return render(request, 'eror.html', context) 
+            else:
+                print('Отключился')
+                self.loggined = False
+                print('После отключения', self.loggined)
+                # context = {
+                #         'response': self.resp
+                #     }
+                # return render(request, 'logout.html', context)
+        # else:
+        #     print('else в logout класса',self.loggined)
+        #     context = {
+        #                 'response': 'Not loggined'
+        #             }
+        #     return render(request, 'eror.html', context) 
 
 
     def select_from_table(self, request):
-        #self.login(request)
-        self.resp_2 = self.conn.select_table(request.GET['request_data'])
-        # print(self.resp_2)
-        # self.context = {
-        #     "resp_2": self.resp_2
-        # }
-        context = str(self.resp_2)
-        print(context)
-        return JsonResponse({'context': context}, status = 200)
+        if self.loggined:
+            self.select_from_table_response = self.conn.select_table(request.GET['request_data'])
+            context = {
+                'reqested_table':str(self.select_from_table_response['reqested_table']),
+                'time_execution':str(self.select_from_table_response['execution_time'])
+            }
+            print(context)
+            return JsonResponse({'context': context}, status = 200)
+        else:
+            return JsonResponse({'context': 'Error'}, status = 401)
 
 
     def create_table(self, request):
@@ -148,7 +173,7 @@ class Request_from_main_page():
     def custom_query(self, request):
         self.query = request.POST['custom_query']
         print(self.query)
-        self.custom_query_resp = self.conn.his(self.query )
+        self.custom_query_resp = self.conn.his(self.query)
         print(self.custom_query_resp)
         return JsonResponse({'custom_query_resp':str(self.custom_query_resp)}, status=200)
 
